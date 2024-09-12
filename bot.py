@@ -13,8 +13,11 @@ load_dotenv("auth.env")
 consumer_key = os.getenv('CONSUMER_KEY')
 consumer_secret = os.getenv('CONSUMER_SECRET')
 access_token = os.getenv('ACCESS_TOKEN')
-access_token_secret = os.getenv('ACCESS_TOKEN_SECRET')
+access_token_secret = None
 
+if consumer_key or consumer_secret or access_token or access_token_secret is None:
+    print("Missing keys!")
+    exit()
 
 def auth_v1(
     consumer_key, consumer_secret, access_token, access_token_secret
