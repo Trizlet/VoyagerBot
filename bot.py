@@ -49,7 +49,7 @@ for i in range(tries):
             consumer_key, consumer_secret, access_token, access_token_secret
         )
 
-        path = os.path.dirname(os.path.realpath(__file__)) + "/data2.json"
+        path = os.path.dirname(os.path.realpath(__file__)) + "/data.json"
         with open(path) as fd:
             metadataJSON = json.load(fd)
 
