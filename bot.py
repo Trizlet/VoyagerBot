@@ -9,15 +9,14 @@ from dotenv import load_dotenv
 
 tries = 4
 
-load_dotenv("auth.env")
+auth = os.path.dirname(os.path.realpath(__file__)) + "/auth.env"
+load_dotenv(auth)
+
 consumer_key = os.getenv('CONSUMER_KEY')
 consumer_secret = os.getenv('CONSUMER_SECRET')
 access_token = os.getenv('ACCESS_TOKEN')
 access_token_secret = os.getenv('ACCESS_TOKEN_SECRET')
 
-if consumer_key or consumer_secret or access_token or access_token_secret is None:
-    print("Missing keys!")
-    exit()
 
 def auth_v1(
     consumer_key, consumer_secret, access_token, access_token_secret
@@ -25,7 +24,6 @@ def auth_v1(
     auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
     auth.set_access_token(access_token, access_token_secret)
     return tweepy.API(auth)
-
 
 def auth_v2(
     consumer_key, consumer_secret, access_token, access_token_secret
@@ -38,7 +36,6 @@ def auth_v2(
         return_type=requests.Response,
         wait_on_rate_limit=True,
     )
-
 
 for i in range(tries):
     try:
