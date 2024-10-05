@@ -12,10 +12,10 @@ tries = 4
 auth = os.path.dirname(os.path.realpath(__file__)) + "/auth.env"
 load_dotenv(auth)
 
-consumer_key = os.getenv('CONSUMER_KEY')
-consumer_secret = os.getenv('CONSUMER_SECRET')
-access_token = os.getenv('ACCESS_TOKEN')
-access_token_secret = os.getenv('ACCESS_TOKEN_SECRET')
+consumer_key = os.getenv("CONSUMER_KEY")
+consumer_secret = os.getenv("CONSUMER_SECRET")
+access_token = os.getenv("ACCESS_TOKEN")
+access_token_secret = os.getenv("ACCESS_TOKEN_SECRET")
 
 
 def auth_v1(
@@ -24,6 +24,7 @@ def auth_v1(
     auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
     auth.set_access_token(access_token, access_token_secret)
     return tweepy.API(auth)
+
 
 def auth_v2(
     consumer_key, consumer_secret, access_token, access_token_secret
@@ -36,6 +37,7 @@ def auth_v2(
         return_type=requests.Response,
         wait_on_rate_limit=True,
     )
+
 
 for i in range(tries):
     try:
@@ -79,24 +81,23 @@ for i in range(tries):
                         with open(destination, "wb") as f:
                             f.write(response.content)
             text2post = f"{host}\n\nTarget: {target}\nFilter: {filter}\nDate: {date}\nOPUS Image ID: {id}"
-           # print(text2post)
+            # print(text2post)
             path1 = os.path.dirname(os.path.realpath(__file__)) + "/RAW.JPG"
             path2 = os.path.dirname(os.path.realpath(__file__)) + "/CALIB.JPG"
             media_id1 = api_v1.media_upload(path1).media_id_string
             media_id2 = api_v1.media_upload(path2).media_id_string
             client_v2.create_tweet(text=text2post, media_ids=[media_id2])
-            #client_v2.create_tweet(text=text2post, media_ids=[media_id2, media_id1])
-           # print("Tweeted!")
+            # client_v2.create_tweet(text=text2post, media_ids=[media_id2, media_id1])
+            # print("Tweeted!")
             time.sleep(2)
             os.remove(os.path.dirname(os.path.realpath(__file__)) + "/RAW.JPG")
             os.remove(os.path.dirname(os.path.realpath(__file__)) + "/CALIB.JPG")
-           # print("Removed images, script complete.")
+        # print("Removed images, script complete.")
     except KeyError:
         if i < tries - 1:  # i is zero indexed
             time.sleep(10)
             continue
         else:
-            #print("ERROR")
+            # print("ERROR")
             raise
     break
-
