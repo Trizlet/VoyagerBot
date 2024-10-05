@@ -7,6 +7,11 @@ import requests
 import tweepy
 from dotenv import load_dotenv
 
+headers = {
+    "Accept-Encoding": "gzip, deflate, br, zstd",
+    "DNT": "1",
+}
+
 tries = 4
 
 auth = os.path.dirname(os.path.realpath(__file__)) + "/auth.env"
@@ -18,17 +23,13 @@ access_token = os.getenv("ACCESS_TOKEN")
 access_token_secret = os.getenv("ACCESS_TOKEN_SECRET")
 
 
-def auth_v1(
-    consumer_key, consumer_secret, access_token, access_token_secret
-) -> tweepy.API:
+def auth_v1(consumer_key, consumer_secret, access_token, access_token_secret) -> tweepy.API:
     auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
     auth.set_access_token(access_token, access_token_secret)
     return tweepy.API(auth)
 
 
-def auth_v2(
-    consumer_key, consumer_secret, access_token, access_token_secret
-) -> tweepy.Client:
+def auth_v2(consumer_key, consumer_secret, access_token, access_token_secret) -> tweepy.Client:
     return tweepy.Client(
         consumer_key=consumer_key,
         consumer_secret=consumer_secret,
@@ -41,12 +42,8 @@ def auth_v2(
 
 for i in range(tries):
     try:
-        api_v1 = auth_v1(
-            consumer_key, consumer_secret, access_token, access_token_secret
-        )
-        client_v2 = auth_v2(
-            consumer_key, consumer_secret, access_token, access_token_secret
-        )
+        api_v1 = auth_v1(consumer_key, consumer_secret, access_token, access_token_secret)
+        client_v2 = auth_v2(consumer_key, consumer_secret, access_token, access_token_secret)
 
         path = os.path.dirname(os.path.realpath(__file__)) + "/data.json"
         with open(path) as fd:
@@ -61,18 +58,22 @@ for i in range(tries):
         host = metadataJSON["page"][selection][4]
 
         chosen = requests.get(
-            f"https://opus.pds-rings.seti.org/opus/api/files/{id}.json?types=vgiss_raw_browse,vgiss_cleaned_browse,vgiss_calib_browse,vgiss_geomed_browse"
+            f"https://opus.pds-rings.seti.org/opus/api/files/{id}.json?types=vgiss_raw_browse,vgiss_cleaned_browse,vgiss_calib_browse,vgiss_geomed_browse",
+            headers=headers,
         )
 
         if chosen.status_code == 200:
             chosenJSON = json.loads(chosen.content)
             for item in chosenJSON["data"][id]:
                 for img in chosenJSON["data"][id][item]:
-                    if str(img).upper().endswith("_RAW.JPG") or str(
-                        img
-                    ).upper().endswith("_CALIB.JPG"):
+                    if str(img).upper().endswith("_RAW.JPG") or str(img).upper().endswith(
+                        "_CALIB.JPG"
+                    ):
                         # print(img)
-                        response = requests.get(img)
+                        response = requests.get(
+                            img,
+                            headers=headers,
+                        )
                         destination = (
                             os.path.dirname(os.path.realpath(__file__))
                             + "/"
@@ -80,7 +81,9 @@ for i in range(tries):
                         )
                         with open(destination, "wb") as f:
                             f.write(response.content)
-            text2post = f"{host}\n\nTarget: {target}\nFilter: {filter}\nDate: {date}\nOPUS Image ID: {id}"
+            text2post = (
+                f"{host}\n\nTarget: {target}\nFilter: {filter}\nDate: {date}\nOPUS Image ID: {id}"
+            )
             # print(text2post)
             path1 = os.path.dirname(os.path.realpath(__file__)) + "/RAW.JPG"
             path2 = os.path.dirname(os.path.realpath(__file__)) + "/CALIB.JPG"
