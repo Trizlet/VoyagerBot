@@ -1,7 +1,7 @@
 # VoyagerBot
 
-**NOTE:** this code probably sucks, I wrote it years ago and I dont reccomend taking anything from it. 
+**Note:** This code is old and probably not great. Use/steal from at your own risk.
 
-Also this was made to be ran with cron on a regular basis, it doesn't run automatically. 
+This bot is designed to be run regularly with cron. it does **not** run automatically on its own.
 
-Good luck with the twitter API.
+Good luck dealing with the Twitter API! I sure struggled.
